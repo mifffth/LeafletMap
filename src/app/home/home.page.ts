@@ -1,13 +1,6 @@
 import { Component } from '@angular/core';
 import * as L from 'leaflet';
 
-// Fix for missing default Leaflet marker icons
-// L.Icon.Default.mergeOptions({
-//   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-//   iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-//   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-// });
-
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -49,20 +42,30 @@ export class HomePage {
       "Terrain": terrain
     }).addTo(this.map);
 
+
     this.map.on('click', (e: any) => {
       const { lat, lng } = e.latlng;
-
+    
       // Remove the previous marker if it exists
       if (this.currentMarker) {
         this.map.removeLayer(this.currentMarker);
       }
-
-      // Add a new marker and store its reference
-      this.currentMarker = L.marker([lat, lng])
+    
+      // Create a custom marker with FontAwesome icon and popupAnchor adjustment
+      const icon = L.divIcon({
+        html: '<i class="fa-solid fa-location-dot fa-2x" style="color:blue"></i>',  // FontAwesome icon
+        className: 'custom-div-icon',
+        iconAnchor: [9, 42], // Anchor point of the marker (center bottom)
+        popupAnchor: [0, -45], // Popup appears above the marker (adjust as needed)
+      });
+    
+      // Add the custom marker to the map
+      this.currentMarker = L.marker([lat, lng], { icon })
         .addTo(this.map)
         .bindPopup(`<b>You are in:</b> ${lat.toFixed(5)}, ${lng.toFixed(5)}`)
         .openPopup();
     });
+    
   }
 
   onBasemapChange(event: any) {
